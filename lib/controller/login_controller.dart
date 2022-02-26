@@ -19,18 +19,9 @@ class LoginController extends GetxController {
 
     try {
       isLoading.value = true;
-      final user = adminRef.snapshots();
-
-      user.forEach((element) {
-        element.docs.forEach((element) {
-          if (element.get('username') == username &&
-              element.get('password') == password) {
-            print('login success');
-          } else {
-            Get.snackbar('Error', 'Invalid Username or Password',
-                snackPosition: SnackPosition.BOTTOM);
-          }
-        });
+      final user = adminRef.get();
+      user.then((value) {
+        // valzz
       });
     } catch (e) {
       print('Login Failed');

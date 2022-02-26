@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_admin_scaffold/admin_scaffold.dart';
 import 'package:get/get.dart';
 import 'package:shoping_admin_app/controller/add_product_controller.dart';
 import 'package:shoping_admin_app/controller/login_controller.dart';
+import 'package:shoping_admin_app/model/product_model.dart';
 
 import 'page/login.dart';
 import 'routes/routes.dart';
@@ -26,7 +28,10 @@ void main() async {
   runApp(
     GetMaterialApp(
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
+        // brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.indigoAccent, brightness: Brightness.dark),
+        useMaterial3: true,
       ),
       getPages: AppPages.pages,
       home: const MyApp(),
@@ -43,17 +48,24 @@ class MyApp extends GetView<LoginController> {
       stream: controller.streamController,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.data != null) {
-          return const HomePage();
+          return HomePage();
         } else {
-          return const HomePage();
+          return HomePage();
         }
       },
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  HomePage({Key? key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final controller = Get.put<AddProductController>(AddProductController());
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +79,44 @@ class HomePage extends StatelessWidget {
         label: const Text('Add Product'),
       ),
       appBar: AppBar(),
+      body: StreamBuilder<QuerySnapshot<Object?>>(
+          stream: controller.productCollectionReference.snapshots(),
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot<Object?>> snapshot) {
+            var data = snapshot.data?.docs;
+
+            if (data?.first.exists != null) {
+              print(data!.length);
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return const Center(
+                child: Text('Error'),
+              );
+            } else if (snapshot.data!.docs.isEmpty) {
+              return const Center(
+                child: const Text('No Data'),
+              );
+            } else {
+              return ListView.builder(
+                itemCount: data?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: data?.elementAt(0).get('image') != null
+                        ? Image.network(data?.elementAt(0).get('image'))
+                        : SizedBox.shrink(),
+                    title: data?.elementAt(0).get('name') != null
+                        ? Text(data?.elementAt(0).get('name'))
+                        : Text('No Data'),
+                  );
+                },
+              );
+            }
+          }),
     );
   }
 }

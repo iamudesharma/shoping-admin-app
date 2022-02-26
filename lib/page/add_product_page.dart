@@ -3,8 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker_web/image_picker_web.dart';
+// import 'package:image_picker_web/image_picker_web.dart';
 import 'package:shoping_admin_app/controller/add_product_controller.dart';
+import 'package:shoping_admin_app/model/product_model.dart';
 
 import '../helper/textformfield_helper.dart';
 
@@ -86,7 +87,9 @@ class AddProductPage extends GetView<AddProductController> {
                     ),
                     Obx(() => controller.productImage.value == null
                         ? TextButton.icon(
-                            onPressed: () {},
+                            onPressed: () async {
+                              await controller.getImage();
+                            },
                             icon: const Icon(Icons.add),
                             label: const Text('Add Product Images'),
                           )
@@ -96,7 +99,16 @@ class AddProductPage extends GetView<AddProductController> {
                     ),
                     ElevatedButton.icon(
                       onPressed: () async {
-                        await controller.getImage();
+                        await controller.productCollectionReference.add(
+                          ProductModel(
+                              name: 'Test',
+                              image: controller.imageFile.value!,
+                              pirce: '200',
+                              description: "This  Is a test product ",
+                              category: 'testu',
+                              subCategory: '',
+                              brand: ''),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(double.infinity, 45),

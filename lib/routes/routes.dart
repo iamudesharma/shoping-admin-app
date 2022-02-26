@@ -5,7 +5,7 @@ import 'package:shoping_admin_app/main.dart';
 import 'package:shoping_admin_app/page/add_product_page.dart';
 import 'package:shoping_admin_app/page/login.dart';
 
- class Routes {
+class Routes {
   static const INITIAL = '/';
   static const HOME = '/home';
   static const LOGIN = '/login';
@@ -20,19 +20,16 @@ class AppPages {
   static final pages = [
     GetPage(
       name: Routes.HOME,
-      page: () => const HomePage(),
+      page: () => HomePage(),
     ),
     GetPage(
       name: Routes.LOGIN,
       page: () => const LoginPage(),
     ),
-
     GetPage(
-      name: Routes.AddProductPage,
-      page: () => const AddProductPage(),
-      binding: AddProductBinding()
-      
-    ),
+        name: Routes.AddProductPage,
+        page: () => const AddProductPage(),
+        binding: AddProductBinding()),
     GetPage(
       name: Routes.LOGIN,
       page: () => const LoginPage(),
