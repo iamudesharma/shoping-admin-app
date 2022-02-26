@@ -44,6 +44,9 @@ dependencies:
   fluttertoast: ^8.0.8
   logger: ^1.1.0
   flutter_admin_scaffold: ^1.1.0
+  image_picker_web: ^2.1.0
+  uuid: ^3.0.6
+  firebase_storage: ^10.2.9
 
 dev_dependencies:
   flutter_test:

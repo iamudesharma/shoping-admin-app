@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
@@ -7,8 +9,10 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 class LoginController extends GetxController {
   var isLoading = false.obs;
 
+  late Stream<User?> streamController;
+
   late FirebaseFirestore _firebaseFirestore;
-  late FirebaseAuth _firebaseAuth;
+  late FirebaseAuth firebaseAuth;
 
   Future login(String username, String password) async {
     CollectionReference adminRef = _firebaseFirestore.collection('admin');
@@ -38,7 +42,10 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     _firebaseFirestore = FirebaseFirestore.instance;
-    _firebaseAuth = FirebaseAuth.instance;
+    firebaseAuth = FirebaseAuth.instance;
+
+    streamController = firebaseAuth.authStateChanges();
+
     super.onInit();
   }
 }

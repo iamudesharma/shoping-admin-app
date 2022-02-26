@@ -12,8 +12,8 @@ class LoginPage extends GetView<LoginController> {
       body: FlutterLogin(
         initialAuthMode: AuthMode.login,
         hideForgotPasswordButton: true,
-        onLogin: (LoginData data) async {
-          await controller.login(data.name, data.password);
+        onLogin: (LoginData data) {
+          controller.login(data.name, data.password);
         },
         onRecoverPassword: (data) {},
       ),
