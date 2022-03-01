@@ -8,11 +8,18 @@
             "name": "shoping_admin_app",
             "request": "launch",
             "type": "dart",
+
             
-            "args": [
-                "-d chrome ",
-                "--web-renderer html",
-            ]
+            
+        },
+        {
+            "name": "shoping_admin_app_html",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--web-renderer","html"],
+
+            
+            
         },
         {
             "name": "shoping_admin_app (profile mode)",
