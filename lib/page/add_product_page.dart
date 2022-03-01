@@ -1,16 +1,70 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 // import 'package:image_picker_web/image_picker_web.dart';
 import 'package:shoping_admin_app/controller/add_product_controller.dart';
 import 'package:shoping_admin_app/model/product_model.dart';
-
+import 'package:uuid/uuid.dart';
 import '../helper/textformfield_helper.dart';
 
-class AddProductPage extends GetView<AddProductController> {
-  const AddProductPage({Key? key}) : super(key: key);
+class AddProductPage extends StatefulWidget {
+  const AddProductPage(
+      {Key? key, this.isEdit = false, this.productModel, this.docId})
+      : super(key: key);
+
+  final bool isEdit;
+  final ProductModel? productModel;
+  final String? docId;
+
+  @override
+  State<AddProductPage> createState() => _AddProductPageState();
+}
+
+class _AddProductPageState extends State<AddProductPage> {
+  @override
+  void initState() {
+    super.initState();
+    print(widget.productModel?.image ?? '' + 'THis a image');
+    if (widget.isEdit) {
+      productTextEditingController =
+          TextEditingController(text: widget.productModel?.name);
+      priceTextEditingController =
+          TextEditingController(text: widget.productModel?.price);
+      productDescriptionTextEditingController =
+          TextEditingController(text: widget.productModel?.description);
+      productCategoryTextEditingController =
+          TextEditingController(text: widget.productModel?.category);
+      productsubCategoryTextEditingController = TextEditingController(
+        text: widget.productModel?.subCategory,
+      );
+    } else {
+      productTextEditingController = TextEditingController();
+      priceTextEditingController = TextEditingController();
+      productDescriptionTextEditingController = TextEditingController();
+      productCategoryTextEditingController = TextEditingController();
+      productCategoryTextEditingController = TextEditingController();
+    }
+  }
+
+  late TextEditingController productTextEditingController =
+      TextEditingController();
+  late TextEditingController priceTextEditingController =
+      TextEditingController();
+  late TextEditingController productCategoryTextEditingController =
+      TextEditingController();
+  late TextEditingController productsubCategoryTextEditingController =
+      TextEditingController();
+  late TextEditingController productDescriptionTextEditingController =
+      TextEditingController();
+
+  final controller = Get.find<AddProductController>();
+
+  removeImage() {
+    setState(() {
+      widget.productModel?.image = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +89,7 @@ class AddProductPage extends GetView<AddProductController> {
                       height: 10,
                     ),
                     TextFormHelpers.textFormFields(
-                      controller: TextEditingController(),
+                      controller: productTextEditingController,
                       label: 'Product Name',
                       hint: 'Enter The Product Name',
                     ),
@@ -43,78 +97,139 @@ class AddProductPage extends GetView<AddProductController> {
                       height: 10,
                     ),
                     TextFormHelpers.textFormFields(
-                        controller: TextEditingController(),
-                        label: 'Product Pirce',
+                        controller: priceTextEditingController,
+                        label: 'Product Price',
                         hint: 'Enter The Product Price'),
                     const SizedBox(
                       height: 10,
                     ),
                     TextFormHelpers.textFormFields(
-                        controller: TextEditingController(),
+                        controller: productDescriptionTextEditingController,
                         label: 'Product Description',
                         hint: 'Enter The Product Description'),
                     const SizedBox(
                       height: 10,
                     ),
                     TextFormHelpers.textFormFields(
-                        controller: TextEditingController(),
-                        label: 'Product Id',
-                        hint: 'Enter The Product Id'),
+                      controller: productCategoryTextEditingController,
+                      label: 'Product Category',
+                      hint: 'Enter The Product Category,',
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
                     TextFormHelpers.textFormFields(
-                      controller: TextEditingController(),
-                      label: 'Product Category',
-                      hint: 'Enter The Product Category,',
-                    ),
-                    Obx(() {
-                      if (controller.productImage.value != null) {
-                        return SizedBox(
-                          height: 200,
-                          width: 200,
-                          child: Image.memory(
-                            Uint8List.fromList(
-                                controller.productImage.value!.codeUnits),
-                          ),
-                        );
-                      } else {
-                        return const SizedBox.shrink();
-                      }
-                    }),
+                        controller: productsubCategoryTextEditingController,
+                        label: 'Product SubCategory',
+                        hint: 'Enter The Product SubCategory'),
+                    widget.isEdit == false
+                        ? Obx(() {
+                            if (controller.productImage.value != null) {
+                              return SizedBox(
+                                height: 200,
+                                width: 200,
+                                child: Image.memory(
+                                  Uint8List.fromList(
+                                      controller.productImage.value!.codeUnits),
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          })
+                        : widget.productModel!.image == null
+                            ? Obx(
+                                () => controller.updateImage.value == null
+                                    ? const SizedBox.shrink()
+                                    : SizedBox(
+                                        height: 200,
+                                        width: 200,
+                                        child: Image.memory(
+                                          Uint8List.fromList(controller
+                                              .updateImage.value!.codeUnits),
+                                        ),
+                                      ),
+                              )
+                            : Image.network(
+                                widget.productModel!.image ?? '',
+                                height: 200,
+                                width: 200,
+                              ),
                     const SizedBox(
                       height: 10,
                     ),
-                    Obx(() => controller.productImage.value == null
-                        ? TextButton.icon(
+                    widget.isEdit
+                        ? TextButton(
                             onPressed: () async {
-                              await controller.getImage();
+                              if (widget.productModel?.image != null) {
+                                removeImage();
+                              } else {
+                                await controller.updateImages();
+                              }
                             },
-                            icon: const Icon(Icons.add),
-                            label: const Text('Add Product Images'),
+                            child: Text(widget.productModel?.image != null
+                                ? 'Remove Image'
+                                : 'Add Image'),
                           )
-                        : const SizedBox.shrink()),
+                        : Obx(() => controller.productImage.value == null
+                            ? TextButton.icon(
+                                onPressed: () async {
+                                  await controller.getImage();
+                                },
+                                icon: const Icon(Icons.add),
+                                label: const Text('Add Product Images'),
+                              )
+                            : const SizedBox.shrink()),
                     const SizedBox(
                       height: 20,
                     ),
                     ElevatedButton.icon(
                       onPressed: () async {
-                        await controller.productCollectionReference.add(
-                          ProductModel(
-                              name: 'Test',
+                        if (widget.isEdit) {
+                          await controller.productCollectionReference
+                              .doc(widget.docId)
+                              .update({
+                            "name": productTextEditingController.text,
+                            "price": priceTextEditingController.text,
+                            "description":
+                                productDescriptionTextEditingController.text,
+                            "category":
+                                productCategoryTextEditingController.text,
+                            "subCategory":
+                                productsubCategoryTextEditingController.text,
+                            "image": controller.imageFile.value ??
+                                widget.productModel?.image,
+                          });
+                          Get.back();
+                          controller.imageFile.value = null;
+                          productTextEditingController.clear();
+                          priceTextEditingController.clear();
+                          productDescriptionTextEditingController.clear();
+                          productCategoryTextEditingController.clear();
+                          productsubCategoryTextEditingController.clear();
+                        } else {
+                          await controller.productCollectionReference.add(
+                            ProductModel(
+                              name: productTextEditingController.text,
                               image: controller.imageFile.value!,
-                              pirce: '200',
-                              description: "This  Is a test product ",
-                              category: 'testu',
-                              subCategory: '',
-                              brand: ''),
-                        );
+                              description:
+                                  productDescriptionTextEditingController.text,
+                              category:
+                                  productCategoryTextEditingController.text,
+                              subCategory:
+                                  productsubCategoryTextEditingController.text,
+                              price: priceTextEditingController.text,
+                              uid: const Uuid().v4(),
+                            ),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         fixedSize: const Size(double.infinity, 45),
                       ),
-                      icon: Icon(Icons.add),
-                      label: const Text('Add Product'),
+                      icon: const Icon(Icons.add),
+                      label: Text(
+                          widget.isEdit ? 'Update Product' : 'Add Product'),
                     )
                   ],
                 ),

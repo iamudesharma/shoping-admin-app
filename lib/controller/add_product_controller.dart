@@ -15,21 +15,14 @@ import 'package:shoping_admin_app/model/product_model.dart';
 
 class AddProductController extends GetxController {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   FirebaseStorage _storage = FirebaseStorage.instance;
 
   // ImagePickerWeb _imagePicker = ImagePickerWeb();
 
   RxnString productImage = RxnString();
   RxnString imageFile = RxnString();
-
-  TextEditingController productTextEditingController = TextEditingController();
-  TextEditingController pirceTextEditingController = TextEditingController();
-  TextEditingController productCategoryTextEditingController =
-      TextEditingController();
-  TextEditingController productIdTextEditingController =
-      TextEditingController();
-  TextEditingController productDescriptionTextEditingController =
-      TextEditingController();
+  RxnString updateImage = RxnString();
 
   CollectionReference productCollectionReference = FirebaseFirestore.instance
       .collection(FirebaseRef.productRef)
@@ -52,6 +45,22 @@ class AddProductController extends GetxController {
     }
   }
 
+  Future<void> updateImages() async {
+    ImagePicker imagePicker = ImagePicker();
+    var image = await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      updateImage.value = String.fromCharCodes(await image.readAsBytes());
+      await uploadFile(image);
+    } else {
+      print("image is null");
+    }
+  }
+
+  Future deleteProduct({required String docId}) async {
+    await productCollectionReference.doc(docId).delete();
+  }
+
   Future<UploadTask?> uploadFile(XFile? file) async {
     if (file == null) {
       // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -64,7 +73,9 @@ class AddProductController extends GetxController {
     UploadTask uploadTask;
 
     // Create a Reference to the file
-    Reference ref = FirebaseStorage.instance.ref().child('productimage/');
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('productimages/${file.name.split('/').last}');
 
     final metadata = SettableMetadata(
       contentType: 'image/jpeg',
@@ -92,9 +103,5 @@ class AddProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    productTextEditingController.addListener(() {
-      productIdTextEditingController.text =
-          productTextEditingController.text.toLowerCase();
-    });
   }
 }

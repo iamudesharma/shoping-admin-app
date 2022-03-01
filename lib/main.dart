@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:shoping_admin_app/controller/add_product_controller.dart';
 import 'package:shoping_admin_app/controller/login_controller.dart';
 import 'package:shoping_admin_app/model/product_model.dart';
+import 'package:shoping_admin_app/page/add_product_page.dart';
 
 import 'page/login.dart';
 import 'routes/routes.dart';
@@ -28,11 +29,9 @@ void main() async {
   runApp(
     GetMaterialApp(
       theme: ThemeData(
-        // brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.indigoAccent, brightness: Brightness.dark),
-        useMaterial3: true,
-      ),
+          // brightness: Brightness.dark,
+
+          ),
       getPages: AppPages.pages,
       home: const MyApp(),
     ),
@@ -45,7 +44,7 @@ class MyApp extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: controller.streamController,
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.data != null) {
           return HomePage();
@@ -99,19 +98,82 @@ class _HomePageState extends State<HomePage> {
               );
             } else if (snapshot.data!.docs.isEmpty) {
               return const Center(
-                child: const Text('No Data'),
+                child: Text('No Data'),
               );
             } else {
-              return ListView.builder(
+              return GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 5,
+                  childAspectRatio: 1.0,
+                ),
                 itemCount: data?.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    leading: data?.elementAt(0).get('image') != null
-                        ? Image.network(data?.elementAt(0).get('image'))
-                        : SizedBox.shrink(),
-                    title: data?.elementAt(0).get('name') != null
-                        ? Text(data?.elementAt(0).get('name'))
-                        : Text('No Data'),
+                  return Card(
+                    key: ValueKey(
+                      data![index].id,
+                    ),
+                    child: Column(
+                      children: [
+                        Stack(
+                          children: [
+                            Image.network(data.elementAt(index).get('image')),
+                            Positioned(
+                              top: 10,
+                              left: 10,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.black.withOpacity(0.5),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Get.to(
+                                      AddProductPage(
+                                        docId: data.elementAt(index).id,
+                                        isEdit: true,
+                                        productModel: ProductModel(
+                                          uid: data.elementAt(index).get('uid'),
+                                          category: data
+                                              .elementAt(index)
+                                              .get('category'),
+                                          subCategory: data
+                                              .elementAt(index)
+                                              .get('category'),
+                                          description: data
+                                              .elementAt(index)
+                                              .get('description'),
+                                          name:
+                                              data.elementAt(index).get('name'),
+                                          price: data
+                                              .elementAt(index)
+                                              .get('price'),
+                                          image: data
+                                              .elementAt(index)
+                                              .get('image'),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.edit),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: CircleAvatar(
+                                backgroundColor: Colors.red.withOpacity(0.5),
+                                child: IconButton(
+                                  onPressed: () async {
+                                    await controller.deleteProduct(
+                                        docId: data.elementAt(index).id);
+                                  },
+                                  icon: const Icon(Icons.delete),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(data.elementAt(index).get('name'))
+                      ],
+                    ),
                   );
                 },
               );

@@ -1,42 +1,43 @@
 import 'dart:convert';
 
+
+
 class ProductModel {
   String name;
-  String image;
-  String pirce;
+  String? image;
+  String uid;
   String description;
   String category;
   String subCategory;
-  String brand;
+  String price;
+
   ProductModel({
     required this.name,
     required this.image,
-    required this.pirce,
+    required this.uid,
     required this.description,
     required this.category,
     required this.subCategory,
-    required this.brand,
+    required this.price,
   });
-
-  
 
   ProductModel copyWith({
     String? name,
     String? image,
-    String? pirce,
+    String? uid,
     String? description,
     String? category,
     String? subCategory,
-    String? brand,
+    String? price,
   }) {
     return ProductModel(
       name: name ?? this.name,
       image: image ?? this.image,
-      pirce: pirce ?? this.pirce,
+      uid: uid ?? this.uid,
       description: description ?? this.description,
       category: category ?? this.category,
       subCategory: subCategory ?? this.subCategory,
-      brand: brand ?? this.brand,
+      price: price ?? this.price,
     );
   }
 
@@ -44,11 +45,11 @@ class ProductModel {
     return {
       'name': name,
       'image': image,
-      'pirce': pirce,
+      'uid': uid,
       'description': description,
       'category': category,
       'subCategory': subCategory,
-      'brand': brand,
+      'price': price,
     };
   }
 
@@ -56,11 +57,11 @@ class ProductModel {
     return ProductModel(
       name: map['name'] ?? '',
       image: map['image'] ?? '',
-      pirce: map['pirce'] ?? '',
+      uid: map['uid'] ?? '',
       description: map['description'] ?? '',
       category: map['category'] ?? '',
       subCategory: map['subCategory'] ?? '',
-      brand: map['brand'] ?? '',
+      price: map['price'] ?? '',
     );
   }
 
@@ -70,7 +71,7 @@ class ProductModel {
 
   @override
   String toString() {
-    return 'ProductModel(name: $name, image: $image, pirce: $pirce, description: $description, category: $category, subCategory: $subCategory, brand: $brand)';
+    return 'ProductModel(name: $name, image: $image, uid: $uid, description: $description, category: $category, subCategory: $subCategory, price: $price)';
   }
 
   @override
@@ -80,21 +81,21 @@ class ProductModel {
     return other is ProductModel &&
       other.name == name &&
       other.image == image &&
-      other.pirce == pirce &&
+      other.uid == uid &&
       other.description == description &&
       other.category == category &&
       other.subCategory == subCategory &&
-      other.brand == brand;
+      other.price == price;
   }
 
   @override
   int get hashCode {
     return name.hashCode ^
       image.hashCode ^
-      pirce.hashCode ^
+      uid.hashCode ^
       description.hashCode ^
       category.hashCode ^
       subCategory.hashCode ^
-      brand.hashCode;
+      price.hashCode;
   }
 }
