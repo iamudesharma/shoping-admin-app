@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:shoping_admin_app/controller/login_controller.dart';
 
 import '../main.dart';
+import 'home_page.dart';
 
 class LoginPage extends GetView<LoginController> {
   const LoginPage({Key? key}) : super(key: key);

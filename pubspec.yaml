@@ -49,6 +49,7 @@ dependencies:
   firebase_storage: ^10.2.9
   image_picker: ^0.8.4+10
   get_storage: ^2.0.3
+  velocity_x: ^3.4.0
 
 dev_dependencies:
   flutter_test:
