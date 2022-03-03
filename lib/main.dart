@@ -49,7 +49,7 @@ class MyApp extends GetView<LoginController> {
         if (snapshot.data != null) {
           return HomePage();
         } else {
-          return HomePage();
+          return const LoginPage();
         }
       },
     );
