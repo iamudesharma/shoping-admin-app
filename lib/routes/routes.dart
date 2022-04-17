@@ -15,19 +15,14 @@ import '../page/product_page.dart';
 
 class Routes {
   static const HOME = '/';
-
   static const LOGIN = '/login';
-
   static const AddProductPage = '/add-Product';
-
   static const UpdateProductPage = '/update-Product';
   static const ProductPage = '/Product';
   static const UserPage = '/users';
   static const OrderPage = '/orders';
   static const Notifications = '/notifications';
-  // static const UpdateProductPage = '/update-Product';
-
-}
+ }
 
 final vxNavigator = VxNavigator(
   routes: {
